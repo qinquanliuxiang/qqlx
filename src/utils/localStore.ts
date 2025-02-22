@@ -26,4 +26,8 @@ function GetToken() {
   return value ? value : null;
 }
 
-export { GetFromLocalStorage, SetToLocalStorage, GetToken };
+function RemoveToken() {
+  localStorage.removeItem("token");
+}
+
+export { GetFromLocalStorage, SetToLocalStorage, GetToken, RemoveToken };

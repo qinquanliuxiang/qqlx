@@ -1,0 +1,16 @@
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.p {
+  text-align: center;
+}
+
+.loginCard {
+  width: 100vw;
+  height: 100vh;
+}
