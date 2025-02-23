@@ -7,16 +7,15 @@ export default function Root() {
   useEffect(() => {
     switch (path) {
       case "/":
-        usenavigate("/workspace/");
+        usenavigate("/workspace/ram/user");
+        break;
+      case "/workspace":
+        usenavigate("/workspace/ram/user");
         break;
       case "/workspace/":
         usenavigate("/workspace/ram/user");
         break;
     }
   }, [path, usenavigate]);
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 }

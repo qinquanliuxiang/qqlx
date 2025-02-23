@@ -1,6 +1,6 @@
 import { Login } from "@/apis/user";
-import { UrlParams } from "@/enum";
-import { LoginRequestType, LoginResponseType } from "@/types/login";
+import { UrlParamsEnum } from "@/enum";
+import { LoginRequestType, LoginResponseType } from "@/types/user";
 import { GetToken } from "@/utils/localStore";
 import { useRequest } from "ahooks";
 import { App, Button, Card, Form, Input, Layout } from "antd";
@@ -41,8 +41,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (token) {
       const searchParams = new URLSearchParams(location.search);
-      if (searchParams.has(UrlParams.Redirect)) {
-        const redirect = searchParams.get(UrlParams.Redirect);
+      if (searchParams.has(UrlParamsEnum.Redirect)) {
+        const redirect = searchParams.get(UrlParamsEnum.Redirect);
         if (redirect) {
           navigate(redirect);
         }
@@ -52,59 +52,57 @@ export default function LoginPage() {
     }
   }, [location.search, navigate, token]);
   return (
-    <Layout>
-      <div className={styles.login}>
-        <Card
-          extra={<SwitchThemComponent />}
-          title={<p className={styles.p}>欢迎登录</p>}
-          styles={{
-            body: {
-              width: "400px",
-            },
-          }}
+    <Layout className={styles.Layout}>
+      <Card
+        extra={<SwitchThemComponent />}
+        title={<p className={styles.p}>欢迎登录</p>}
+        styles={{
+          body: {
+            width: "400px",
+          },
+        }}
+      >
+        <Form
+          name="login"
+          style={{ maxWidth: 600 }}
+          onFinish={onFinish}
+          autoComplete="off"
         >
-          <Form
-            name="login"
-            style={{ maxWidth: 600 }}
-            onFinish={onFinish}
-            autoComplete="off"
+          <Form.Item<LoginRequestType>
+            name="email"
+            rules={[
+              { required: true, message: "邮箱为空" },
+              {
+                pattern:
+                  /^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+                message: "邮箱格式不正确",
+              },
+            ]}
           >
-            <Form.Item<LoginRequestType>
-              name="email"
-              rules={[
-                { required: true, message: "邮箱为空" },
-                {
-                  pattern:
-                    /^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-                  message: "邮箱格式不正确",
-                },
-              ]}
-            >
-              <Input placeholder="请输入邮箱" />
-            </Form.Item>
+            <Input placeholder="请输入邮箱" />
+          </Form.Item>
 
-            <Form.Item<LoginRequestType>
-              name="password"
-              rules={[
-                { required: true, message: "密码为空" },
-                { min: 8, message: "密码至少8位" },
-              ]}
+          <Form.Item<LoginRequestType>
+            name="password"
+            rules={[
+              { required: true, message: "密码为空" },
+              { min: 8, message: "密码至少8位" },
+            ]}
+          >
+            <Input.Password placeholder="请输入密码" />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              block
+              loading={loginLoading}
+              type="primary"
+              htmlType="submit"
             >
-              <Input.Password placeholder="请输入密码" />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                block
-                loading={loginLoading}
-                type="primary"
-                htmlType="submit"
-              >
-                登录
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
-      </div>
+              登录
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </Layout>
   );
 }

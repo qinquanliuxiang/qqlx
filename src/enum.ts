@@ -1,8 +1,12 @@
-export enum UrlParams {
+export enum UrlParamsEnum {
   Redirect = "redirect",
 }
 
-export enum Http {
+export enum MemuEnum {
+  Perfix = "/workspace/",
+}
+
+export enum HttpEnum {
   ContentType = "Content-Type",
   ContentTypeJson = "application/json",
   GetMothod = "get",

@@ -29,4 +29,16 @@ export interface Role {
   deletedAt: number;
   name: string;
   description: string;
+  policys: Ppolicys[] | null;
+}
+
+export interface Ppolicys {
+  id: number;
+  createdAt: number;
+  updatedAt: number;
+  deletedAt: number;
+  name: string;
+  path: string;
+  method: string;
+  description: string;
 }

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Http } from "@/enum";
+import { HttpEnum } from "@/enum";
 import { GetToken, RemoveToken } from "./localStore";
 
 const viteEnv = import.meta.env.VITE_ENV || "dev";
@@ -24,8 +24,8 @@ axios.defaults.baseURL = host;
 // 请求拦截器
 axios.interceptors.request.use(
   function (config) {
-    if (!config.headers[Http.ContentType]) {
-      config.headers[Http.ContentType] = Http.ContentTypeJson;
+    if (!config.headers[HttpEnum.ContentType]) {
+      config.headers[HttpEnum.ContentType] = HttpEnum.ContentTypeJson;
     }
     const token = GetToken();
     if (token) {
@@ -112,7 +112,7 @@ export interface responseType {
 export default function (method: string, url: string, param?: unknown) {
   return new Promise<responseType>((resolve, reject) => {
     switch (method) {
-      case Http.GetMothod:
+      case HttpEnum.GetMothod:
         get(url, param)
           .then((response) => {
             resolve(response as responseType);
@@ -121,7 +121,7 @@ export default function (method: string, url: string, param?: unknown) {
             reject(error);
           });
         break;
-      case Http.PostMothod:
+      case HttpEnum.PostMothod:
         post(url, param)
           .then((response) => {
             resolve(response as responseType);

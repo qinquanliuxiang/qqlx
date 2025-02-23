@@ -20,6 +20,11 @@ function MyApp() {
         algorithm: isDarkMode
           ? [theme.darkAlgorithm, theme.compactAlgorithm]
           : [theme.defaultAlgorithm, theme.compactAlgorithm],
+        components: {
+          Layout: {
+            colorBgHeader: isDarkMode ? "#000" : "#fff",
+          },
+        },
       }}
     >
       <App className="app">
