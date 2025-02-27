@@ -1,0 +1,12 @@
+services:
+  backend:
+    image: registry.cn-beijing.aliyuncs.com/qqlx/qqlx:${IMAGE_VERSION}
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      - CONFIG_PATH=/app/config.yaml
+      - CASBIN_MODE_PATH=/app/model.conf
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./model.conf:/app/model.conf

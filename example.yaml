@@ -1,0 +1,43 @@
+server:
+  bind: 0.0.0.0:8080
+  projectName: qqlx
+  # value: debug, info, err
+  logLevel: debug
+
+# mysql配置
+mysql:
+  username: xxx
+  password: xxx
+  host: 127.0.0.1
+  port: 3306
+  database: web_service
+  # 最大空闲连接
+  maxIdleConns: 10
+  # 最大连接数
+  maxOpenConns: 100
+  # 是否打印日志
+  debug: true
+
+# redis配置
+redis:
+  # single sentinel
+  mode: single
+  host: 127.0.0.1
+  port: 23816
+  password: xxxx
+  # 过期时间 3s 3m 3h
+  expireTime: 300s
+  keyPrefix: qqlx
+  db: 0
+  # sentinel:
+  #   masterName: mymaster
+  #   password: Qinquanliuxiang1995
+  #   hosts:
+  #     - "127.0.0.1:23817"
+  #     - "127.0.0.1:23818"
+  #     - "127.0.0.1:23819"
+
+jwt:
+  issuer: qqlx
+  secret: 123456
+  expirationTime: 9999h
