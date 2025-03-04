@@ -58,7 +58,7 @@ func (p *PolicyStore) List(ctx context.Context, page int, pageSize int) (total i
 	return total, policys, nil
 }
 
-func (p *PolicyStore) GetPolicyByID(ctx context.Context, id uint, options ...base.PolicyQueryOption) (policy *model.Policy, err error) {
+func (p *PolicyStore) GetPolicyByID(ctx context.Context, id int, options ...base.PolicyQueryOption) (policy *model.Policy, err error) {
 	query := p.data.WithContext(ctx).Model(policy).Where("id = ?", id)
 	for _, option := range options {
 		option(query)

@@ -14,6 +14,7 @@ import (
 	"qqlx/pkg/jwt"
 	"qqlx/pkg/permissions"
 	"qqlx/schema"
+	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -70,14 +71,6 @@ func (u *UserService) Login(ctx context.Context, req *schema.UserLoginRequest) (
 			}
 			return nil, err
 		}
-	} else {
-		user, err = u.userStore.GetUserByName(ctx, req.Username, base.WithUserRole())
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, apierrs.NewAuthError(reason.ErrUserNotFound)
-			}
-			return nil, err
-		}
 	}
 
 	if user.Status == model.StatusDisabled {
@@ -88,7 +81,7 @@ func (u *UserService) Login(ctx context.Context, req *schema.UserLoginRequest) (
 		return nil, reason.ErrInvalidPassword
 	}
 
-	err = u.cache.SetString(ctx, constant.RoleCacheKeyPrefix+user.Name, user.Role.Name, &data.NeverExpires)
+	err = u.cache.SetString(ctx, constant.RoleCacheKeyPrefix+strconv.Itoa(user.ID), user.Role.Name, &data.NeverExpires)
 	if err != nil {
 		return nil, err
 	}
@@ -132,9 +125,14 @@ func (u *UserService) DeleteUser(ctx context.Context, req *schema.IDRequest) (er
 	return u.userStore.Delete(ctx, user)
 }
 
-func (u *UserService) UpdatePassword(ctx context.Context, req *schema.UserUpdatePasswordRequest) (err error) {
+func (u *UserService) UpdatePassword(ctx context.Context, userid int, req *schema.UserUpdatePasswordRequest) (err error) {
 	var user *model.User
-	user, err = u.userStore.GetUserByID(ctx, req.ID)
+
+	if req.NewPassword != req.ConfirmPassword {
+		return reason.ErrPasswordNotMatch
+	}
+
+	user, err = u.userStore.GetUserByID(ctx, userid)
 	if err != nil {
 		return err
 	}
@@ -154,9 +152,9 @@ func (u *UserService) UpdatePassword(ctx context.Context, req *schema.UserUpdate
 	return u.userStore.Save(ctx, user)
 }
 
-func (u *UserService) UpdateUser(ctx context.Context, req *schema.UserUpdateRequest) (err error) {
+func (u *UserService) UpdateUser(ctx context.Context, userid int, req *schema.UserUpdateRequest) (err error) {
 	var user *model.User
-	user, err = u.userStore.GetUserByID(ctx, req.ID)
+	user, err = u.userStore.GetUserByID(ctx, userid)
 	if err != nil {
 		return err
 	}
@@ -165,9 +163,22 @@ func (u *UserService) UpdateUser(ctx context.Context, req *schema.UserUpdateRequ
 		return reason.ErrUserNotFound
 	}
 
-	user.Avatar = req.Avatar
-	user.Email = req.Email
-	user.Mobile = req.Mobile
+	isUpdated := false
+	if req.Name != "" && req.Name != user.Name {
+		user.Name = req.Name
+		isUpdated = true
+	}
+	if req.Mobile != "" && req.Mobile != user.Mobile {
+		user.Mobile = req.Mobile
+		isUpdated = true
+	}
+	if req.Avatar != "" && req.Avatar != user.Avatar {
+		user.Avatar = req.Avatar
+		isUpdated = true
+	}
+	if !isUpdated {
+		return nil
+	}
 	return u.userStore.Save(ctx, user)
 }
 
@@ -230,7 +241,36 @@ func (u *UserService) GetUserBasicInfoByID(ctx context.Context, req *schema.IDRe
 	}, nil
 }
 
+func (u *UserService) GetUserBasicInfoByEmail(ctx context.Context, req *schema.UserGetByEmailRequest) (res *schema.UserResponse, err error) {
+	user, err := u.userStore.GetUserByEmail(ctx, req.Email, base.WithUserRole(), base.WithUserPolicys())
+	if err != nil {
+		return nil, err
+	}
+	if user.Status == model.StatusDisabled {
+		logger.WithContext(ctx, true).Errorf("user has been disabled, userID = %v", user.ID)
+		return nil, reason.ErrUserNotFound
+	}
+
+	return &schema.UserResponse{
+		MetaData: &model.MetaData{
+			ID:        user.ID,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		},
+		Name:   user.Name,
+		Avatar: user.Avatar,
+		Email:  user.Email,
+		Status: user.Status,
+		Mobile: user.Mobile,
+		Role:   user.Role,
+		RoleID: user.RoleID,
+	}, nil
+}
+
 func (u *UserService) ListUser(ctx context.Context, req *schema.UserListRequest) (data *schema.UserListResponse, err error) {
+	if req.ListRequest == nil {
+		return nil, reason.ErrInvalidRequest
+	}
 	total, users, err := u.userStore.List(ctx, req.Page, req.PageSize)
 	if err != nil {
 		return nil, err

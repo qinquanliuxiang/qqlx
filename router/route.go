@@ -38,6 +38,7 @@ func (a *ApiRoute) RegisterApiUserRoute(r *gin.RouterGroup, authorization *middl
 			userGroup.POST("/deleteUser", authorization.Authorization(), a.userController.Delete)
 			userGroup.GET("/getUserList", authorization.Authorization(), a.userController.List)
 			userGroup.GET("/getUserById", authorization.Authorization(), a.userController.GetById)
+			userGroup.GET("/getUserByEmail", authorization.Authorization(), a.userController.GetByEmail)
 			userGroup.POST("/updateUserRole", authorization.Authorization(), a.userController.UpdateRole)
 		}
 	}

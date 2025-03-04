@@ -3,17 +3,15 @@ package schema
 import "qqlx/model"
 
 type UserRegistryRequest struct {
-	Name         string `json:"name" binding:"required"`
-	Password     string `json:"password" binding:"required"`
-	Avatar       string `json:"avatar"`
-	Email        string `json:"email" binding:"email"`
-	LarkUsername string `json:"larkUsername"`
-	Mobile       string `json:"mobile"`
+	Name     string `json:"name" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Avatar   string `json:"avatar"`
+	Email    string `json:"email" binding:"email"`
+	Mobile   string `json:"mobile"`
 }
 
 type UserLoginRequest struct {
-	Username string `json:"username" binding:"required_without=Email"`
-	Email    string `json:"email" binding:"required_without=Username,email"`
+	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required,min=8"`
 }
 
@@ -23,17 +21,15 @@ type UserLoginResponse struct {
 }
 
 type UserUpdatePasswordRequest struct {
-	*IDRequest
-	OldPassword string `json:"oldPassword" binding:"required,min=8"`
-	NewPassword string `json:"newPassword" binding:"required,min=8"`
+	OldPassword     string `json:"oldPassword" binding:"required,min=8"`
+	NewPassword     string `json:"newPassword" binding:"required,min=8"`
+	ConfirmPassword string `json:"confirmPassword" binding:"required,min=8"`
 }
 
 type UserUpdateRequest struct {
-	*IDRequest
-	Avatar       string `json:"avatar"`
-	Email        string `json:"email" binding:"email"`
-	LarkUsername string `json:"larkUsername"`
-	Mobile       string `json:"mobile"`
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Mobile string `json:"mobile"`
 }
 
 type UserResponse struct {
@@ -42,7 +38,7 @@ type UserResponse struct {
 	Avatar string      `json:"avatar"`
 	Email  string      `json:"email" binding:"email"`
 	Mobile string      `json:"mobile"`
-	RoleID uint        `json:"roleID"`
+	RoleID int         `json:"roleID"`
 	Role   *model.Role `json:"role,omitempty"`
 	Status int         `json:"status"`
 }
@@ -58,6 +54,10 @@ type UserListResponse struct {
 }
 
 type UserUpdateRoleRequest struct {
-	UserID uint `json:"userID" binding:"required,gte=1"`
-	RoleID uint `json:"roleID" binding:"required,gte=1"`
+	UserID int `json:"userID" binding:"required,gte=1"`
+	RoleID int `json:"roleID" binding:"required,gte=1"`
+}
+
+type UserGetByEmailRequest struct {
+	Email string `form:"email" binding:"required,email"`
 }

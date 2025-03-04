@@ -54,13 +54,13 @@ func (userContr *UserController) UpdatePassword(c *gin.Context) {
 	if handler.BindAndCheck(c, req) {
 		return
 	}
-
-	if err := checkUserPermission(c, req.ID); err != nil {
-		handler.ResponseForbidden(c, err)
+	claims, err := jwt.GetMyClaims(c)
+	if err != nil {
+		handler.ResponseUnauthorized(c, err)
 		return
 	}
 
-	if err := userContr.userSvc.UpdatePassword(c, req); err != nil {
+	if err := userContr.userSvc.UpdatePassword(c, claims.UserID, req); err != nil {
 		response(c, err)
 		return
 	}
@@ -72,13 +72,13 @@ func (userContr *UserController) Update(c *gin.Context) {
 	if handler.BindAndCheck(c, req) {
 		return
 	}
-
-	if err := checkUserPermission(c, req.ID); err != nil {
-		handler.ResponseForbidden(c, err)
+	claims, err := jwt.GetMyClaims(c)
+	if err != nil {
+		handler.ResponseUnauthorized(c, err)
 		return
 	}
 
-	if err := userContr.userSvc.UpdateUser(c, req); err != nil {
+	if err := userContr.userSvc.UpdateUser(c, claims.UserID, req); err != nil {
 		response(c, err)
 		return
 	}
@@ -135,8 +135,21 @@ func (userContr *UserController) GetById(c *gin.Context) {
 	handler.ResponseSuccess(c, res)
 }
 
+func (userContr *UserController) GetByEmail(c *gin.Context) {
+	req := new(schema.UserGetByEmailRequest)
+	if handler.BindAndCheck(c, req) {
+		return
+	}
+	res, err := userContr.userSvc.GetUserBasicInfoByEmail(c, req)
+	if err != nil {
+		response(c, err)
+		return
+	}
+	handler.ResponseSuccess(c, res)
+}
+
 func (userContr *UserController) GetMyInfo(c *gin.Context) {
-	claims, err := jwt.GetMyCustomClaims(c)
+	claims, err := jwt.GetMyClaims(c)
 	if err != nil {
 		handler.ResponseUnauthorized(c, err)
 		return
@@ -150,8 +163,8 @@ func (userContr *UserController) GetMyInfo(c *gin.Context) {
 }
 
 // checkUserPermission
-func checkUserPermission(c *gin.Context, reqID uint) error {
-	claims, err := jwt.GetMyCustomClaims(c)
+func checkUserPermission(c *gin.Context, reqID int) error {
+	claims, err := jwt.GetMyClaims(c)
 	if err != nil {
 		return err
 	}
@@ -165,10 +178,7 @@ func checkUserPermission(c *gin.Context, reqID uint) error {
 // response
 // Return HTTP status code based on error
 func response(c *gin.Context, err error) {
-	if errors.Is(err, reason.ErrUserNotFound) {
-		handler.ResponseNotFound(c, err)
-		return
-	} else if errors.Is(err, reason.ErrInvalidPassword) {
+	if errors.Is(err, reason.ErrUserNotFound) || errors.Is(err, reason.ErrInvalidPassword) {
 		handler.ResponseUnauthorized(c, err)
 		return
 	}

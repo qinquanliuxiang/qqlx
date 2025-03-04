@@ -2,8 +2,8 @@ package conf
 
 import (
 	"fmt"
-	"time"
 	"qqlx/base/constant"
+	"time"
 
 	"github.com/spf13/viper"
 )

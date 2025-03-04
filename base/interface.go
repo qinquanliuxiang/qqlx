@@ -2,8 +2,8 @@ package base
 
 import (
 	"context"
-	"time"
 	"qqlx/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -35,7 +35,7 @@ type GeneralUserStore interface {
 // GetUserStore 获取用户
 type GetUserStore interface {
 	GetUserByName(ctx context.Context, name string, options ...UserQueryOption) (user *model.User, err error)
-	GetUserByID(ctx context.Context, id uint, options ...UserQueryOption) (user *model.User, err error)
+	GetUserByID(ctx context.Context, id int, options ...UserQueryOption) (user *model.User, err error)
 	GetUserByEmail(ctx context.Context, email string, options ...UserQueryOption) (user *model.User, err error)
 }
 
@@ -70,7 +70,7 @@ type GeneralRoleStore interface {
 
 // GetRoleStore 获取角色
 type GetRoleStore interface {
-	GetRoleByID(ctx context.Context, id uint, options ...RoleQueryOption) (role *model.Role, err error)
+	GetRoleByID(ctx context.Context, id int, options ...RoleQueryOption) (role *model.Role, err error)
 	GetRoleByName(ctx context.Context, name string, options ...RoleQueryOption) (role *model.Role, err error)
 }
 
@@ -100,7 +100,7 @@ type GeneralPolicyStore interface {
 }
 
 type GetPolicyStore interface {
-	GetPolicyByID(ctx context.Context, id uint, options ...PolicyQueryOption) (policy *model.Policy, err error)
+	GetPolicyByID(ctx context.Context, id int, options ...PolicyQueryOption) (policy *model.Policy, err error)
 	GetPolicyByName(ctx context.Context, name string, options ...PolicyQueryOption) (policy *model.Policy, err error)
 	GetPolicyByIDs(ctx context.Context, ids []uint) (policys []*model.Policy, err error)
 }

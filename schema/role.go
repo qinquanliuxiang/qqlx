@@ -8,7 +8,7 @@ type RoleCreateRequest struct {
 }
 
 type RoleUpdateRequest struct {
-	ID   uint   `json:"id" binding:"required"`
+	ID   int    `json:"id" binding:"required"`
 	Desc string `json:"desc" binding:"required"`
 }
 
@@ -23,11 +23,11 @@ type RoleListResponse struct {
 }
 
 type RoleUpdatePolicyRequest struct {
-	RoleID   uint   `json:"roleID" binding:"required"`
+	RoleID   int    `json:"roleID" binding:"required"`
 	PolicyID []uint `json:"policyID" binding:"required"`
 }
 
 type RoleDeltePolicyRequest struct {
-	RoleID   uint   `json:"roleID" binding:"required"`
+	RoleID   int    `json:"roleID" binding:"required"`
 	PolicyID []uint `json:"policyID" binding:"required"`
 }

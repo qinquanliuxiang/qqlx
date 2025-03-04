@@ -51,7 +51,7 @@ func BindAndCheck(c *gin.Context, req interface{}) bool {
 func conversionError(err error) *resp {
 	apierr, ok := err.(*apierrs.ApiError)
 	if !ok {
-		return newResponseForErr(WithCode(apierrs.ErrNotApiErr), WithMessage(err.Error()))
+		return newResponseForErr(WithCode(apierrs.ErrNotApiErr), WithErr(err.Error()))
 	}
 	return newResponseForErr(WithCode(apierr.Code), WithMessage(apierr.Msg), WithErr(apierr.Err.Error()))
 }

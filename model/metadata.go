@@ -8,8 +8,8 @@ const (
 )
 
 type MetaData struct {
-	ID        uint                  `gorm:"primarykey" json:"id"`
-	CreatedAt uint                  `gorm:"autoCreateTime" json:"createdAt"`
-	UpdatedAt uint                  `gorm:"autoUpdateTime" json:"updatedAt"`
+	ID        int                   `gorm:"primarykey" json:"id"`
+	CreatedAt int                   `gorm:"autoCreateTime" json:"createdAt"`
+	UpdatedAt int                   `gorm:"autoUpdateTime" json:"updatedAt"`
 	DeletedAt soft_delete.DeletedAt `gorm:"softDelete:;index" json:"deletedAt"`
 }

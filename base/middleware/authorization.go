@@ -9,6 +9,7 @@ import (
 	"qqlx/base/reason"
 	"qqlx/pkg/jwt"
 	"qqlx/pkg/permissions"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -31,14 +32,14 @@ func NewAuthorization(cache base.Cache, authorizer permissions.Authorizer, userR
 // Authorization 基于 Casbin 的鉴权中间件
 func (a *AuthorizationMiddleware) Authorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		claims, err := jwt.GetMyCustomClaims(c)
+		claims, err := jwt.GetMyClaims(c)
 		if err != nil {
 			handler.ResponseForbidden(c, err)
 			return
 		}
 
-		var roleName string
-		roleName, err = a.cache.GetString(c, constant.RoleCacheKeyPrefix+claims.UserName)
+		userID := strconv.Itoa(claims.UserID)
+		roleName, err := a.cache.GetString(c, constant.RoleCacheKeyPrefix+userID)
 		if err != nil {
 			user, err := a.userRepo.GetUserByID(c, claims.UserID, base.WithUserRole())
 			if err != nil {
@@ -46,7 +47,12 @@ func (a *AuthorizationMiddleware) Authorization() gin.HandlerFunc {
 				return
 			}
 			roleName = user.Role.Name
-			_ = a.cache.SetString(c, constant.RoleCacheKeyPrefix+claims.UserName, roleName, &data.NeverExpires)
+			_ = a.cache.SetString(c, constant.RoleCacheKeyPrefix+userID, roleName, &data.NeverExpires)
+		}
+
+		if roleName == "" {
+			handler.ResponseForbidden(c, err)
+			return
 		}
 
 		// 判断是否有权限D

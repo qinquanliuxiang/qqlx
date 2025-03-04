@@ -50,7 +50,7 @@ func (u *UserStore) Save(ctx context.Context, user *model.User) (err error) {
 	return nil
 }
 
-func (u *UserStore) GetUserByID(ctx context.Context, id uint, options ...base.UserQueryOption) (user *model.User, err error) {
+func (u *UserStore) GetUserByID(ctx context.Context, id int, options ...base.UserQueryOption) (user *model.User, err error) {
 	query := u.store.WithContext(ctx).Model(&user).Where("id = ?", id)
 	for _, option := range options {
 		option(query)

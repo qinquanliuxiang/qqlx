@@ -70,7 +70,7 @@ func (r *GeneralRoleStore) List(ctx context.Context, page int, pageSize int) (to
 	return total, roles, nil
 }
 
-func (r *GeneralRoleStore) GetRoleByID(ctx context.Context, id uint, options ...base.RoleQueryOption) (role *model.Role, err error) {
+func (r *GeneralRoleStore) GetRoleByID(ctx context.Context, id int, options ...base.RoleQueryOption) (role *model.Role, err error) {
 	query := r.store.WithContext(ctx).Model(&role).Where("id = ?", id)
 	// 添加查询选项
 	for _, option := range options {
